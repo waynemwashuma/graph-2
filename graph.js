@@ -20,10 +20,14 @@ export class Node {
   }
 }
 
+/**
+ * @template T
+ */
 export class Edge {
-  constructor(from, to) {
+  constructor(from, to, weight) {
     this.from = from
     this.to = to
+    this.weight = weight
   }
   getOutBound(nodeid) {
     if (this.from == nodeid) {

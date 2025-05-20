@@ -20,6 +20,9 @@ export class GraphPathNode {
     this.hCost = hCost
   }
   
+  /**
+   * @returns {number}
+   */
   fCost() {
     return this.gCost + this.hCost
   }

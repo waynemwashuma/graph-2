@@ -16,7 +16,9 @@ const graph = new Graph()
 
 generateBoxedNodes(graph, innerWidth - 100, innerHeight - 100, new Vector2(15, 15), new Vector2(50, 50))
 
-const path = aStar(graph, 0, 104, Vector2.distanceTo)
+const start = 0
+const end = 104
+const path = aStar(graph, start, end, Vector2.distanceTo).path(end)
 
 drawGraph(graph)
 drawPath(graph, path)
