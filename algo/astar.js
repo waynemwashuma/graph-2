@@ -3,34 +3,30 @@ import { GraphPath, GraphPathNode } from '../path.js';
 /**
  * @template T
  * @param {Graph<T>} graph
+ * @param {(start:T,end:T)=>number} costFunc
  * @param {NodeId} start
  * @param {NodeId} end
- * @param {(start:T,end:T)=>number} costFunc
  * @returns {GraphPath}
  */
-export function aStar(graph, start, end, costFunc) {
-  const target = graph.nodes[end]
+export function aStar(graph, costFunc, start, end) {
+  const target = graph.getNode(end)
   const visited = new Set()
   
   // make this a priority queue
   const unvisited = [start]
-  const trackedpath = new GraphPath()
-  trackedpath.set(start, new GraphPathNode())
+  const path = new GraphPath()
+  path.set(start, new GraphPathNode(undefined, 0, costFunc(graph.getNode(start).weight, target.weight)))
   
   while (unvisited.length) {
     unvisited.sort((a, b) => {
       const nodeA = graph.getNode(a)
       const nodeB = graph.getNode(b)
-      const pathA = trackedpath.get(a)
-      const pathB = trackedpath.get(b)
+      const pathA = path.get(a)
+      const pathB = path.get(b)
       const currentCost = pathA.fCost()
       const contenderCost = pathB.fCost()
       
-      if (
-        contenderCost < currentCost ||
-        contenderCost === currentCost &&
-        pathB.hCost < pathA.hCost
-      ) {
+      if (contenderCost < currentCost) {
         return 1
       } else {
         return -1
@@ -39,7 +35,7 @@ export function aStar(graph, start, end, costFunc) {
     })
     
     const currentid = unvisited.shift()
-    const current = graph.nodes[currentid]
+    const current = graph.getNode(currentid)
     visited.add(currentid)
     
     if (currentid == end) {
@@ -48,7 +44,7 @@ export function aStar(graph, start, end, costFunc) {
     
     for (let i = 0; i < current.edges.length; i++) {
       const edgeid = current.edges[i]
-      const edge = graph.edges[edgeid]
+      const edge = graph.getEdge(edgeid)
       
       // assumes graph is undirected.
       const neighbourid = edge.getOutBound(currentid)
@@ -57,21 +53,21 @@ export function aStar(graph, start, end, costFunc) {
         continue
       }
       
-      const neighbour = graph.nodes[neighbourid]
-      const neighborPathNode = trackedpath.get(neighbourid)
-      const currentPathNode = trackedpath.get(currentid)
+      const neighbour = graph.getNode(neighbourid)
+      const neighborPathNode = path.get(neighbourid)
+      const currentPathNode = path.get(currentid)
       const cost = currentPathNode.gCost + costFunc(current.weight, neighbour.weight)
       
-      if (neighborPathNode && cost < neighborPathNode.gCost) {
-        neighborPathNode.gCost = cost
-        neighborPathNode.parent = currentid
-        
-      } else if (!trackedpath.has(neighbourid)) {
+      if (neighborPathNode) {
+        if (cost < neighborPathNode.gCost) {
+          neighborPathNode.gCost = cost
+          neighborPathNode.parent = currentid
+        }
+      } else {
         unvisited.push(neighbourid)
-        trackedpath.set(neighbourid, new GraphPathNode(currentid, cost, costFunc(neighbour.weight, target.weight)))
+        path.set(neighbourid, new GraphPathNode(currentid, cost, costFunc(neighbour.weight, target.weight)))
       }
-      
     }
   }
-  return trackedpath
+  return path
 }

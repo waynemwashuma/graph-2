@@ -13,7 +13,7 @@ export class Node {
   weight
   
   /**
-   * @@param {T} weight
+   * @param {T} weight
    */
   constructor(weight) {
     this.weight = weight
@@ -39,20 +39,29 @@ export class Edge {
 }
 
 /**
- * @template  T
+ * @template T
+ * @template U
  */
 export class Graph {
   /**
-   * use DenseList instead
-   * @type {Node[]}
+   * @type {Node<T>[]}
    */
   nodes = []
   
   /**
-   * use DenseList instead
-   * @type {Edge[]}
+   * @type {Edge<U>[]}
    */
   edges = []
+  
+  /***
+   * @readonly
+   * @type {boolean}
+   */
+  directed
+  
+  constructor(directed){
+    this.directed = directed
+  }
   
   /**
    * @param {T} weight
@@ -80,16 +89,6 @@ export class Graph {
     
     return id
   }
-  
-  /**
-   * @param {NodeId} index
-   */
-  removeNode(index) {}
-  
-  /**
-   * @param {EdgeId} index
-   */
-  removeEdge(index) {}
   
   /**
    * @param {NodeId} id

@@ -1,6 +1,6 @@
 import { Vector2, rand } from './vector2.js';
 import { Graph } from './graph.js';
-import { aStar } from "./algo/index.js"
+import { aStar,dijkstra } from "./algo/index.js"
 const canvas = document.createElement("canvas")
 const ctx = canvas.getContext('2d')
 
@@ -14,14 +14,15 @@ document.body.appendChild(canvas)
  */
 const graph = new Graph()
 
-generateBoxedNodes(graph, innerWidth - 100, innerHeight - 100, new Vector2(15, 15), new Vector2(50, 50))
+generateDiagonalBoxedNodes(graph, innerWidth - 100, innerHeight - 100, new Vector2(15, 15), new Vector2(50, 50))
 
 const start = 0
 const end = 104
-const path = aStar(graph, start, end, Vector2.distanceTo).path(end)
+const path = aStar(graph,Vector2.distanceTo, start, end)
+path.inner.forEach((v,k)=>console.log(k,v))
 
 drawGraph(graph)
-drawPath(graph, path)
+drawPath(graph, path.path(end))
 
 /**
  * @param {Graph<Vector2>} graph
