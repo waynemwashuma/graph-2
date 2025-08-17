@@ -12,14 +12,13 @@ document.body.appendChild(canvas)
 /**
  * @type {Graph<Vector2>}
  */
-const graph = new Graph()
+const graph = new Graph(false)
 
 generateDiagonalBoxedNodes(graph, innerWidth - 100, innerHeight - 100, new Vector2(15, 15), new Vector2(50, 50))
-
 const start = 0
 const end = 104
 const path = aStar(graph,Vector2.distanceTo, start, end)
-path.inner.forEach((v,k)=>console.log(k,v))
+//path.inner.forEach((v,k)=>console.log(k,v))
 
 drawGraph(graph)
 drawPath(graph, path.path(end))

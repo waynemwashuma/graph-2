@@ -1,4 +1,5 @@
 import { GraphPath, GraphPathNode } from '../path.js';
+import { PriorityQueue } from '../priorityqueue.js';
 
 /**
  * @template T
@@ -11,44 +12,21 @@ import { GraphPath, GraphPathNode } from '../path.js';
 export function aStar(graph, costFunc, start, end) {
   const target = graph.getNode(end)
   const visited = new Set()
-  
-  // make this a priority queue
-  const unvisited = [start]
+  const unvisited = new PriorityQueue((a, b) => a[1] < b[1])
   const path = new GraphPath()
+  
+  unvisited.push([start, 0])
   path.set(start, new GraphPathNode(undefined, 0, costFunc(graph.getNode(start).weight, target.weight)))
   
-  while (unvisited.length) {
-    unvisited.sort((a, b) => {
-      const nodeA = graph.getNode(a)
-      const nodeB = graph.getNode(b)
-      const pathA = path.get(a)
-      const pathB = path.get(b)
-      const currentCost = pathA.fCost()
-      const contenderCost = pathB.fCost()
-      
-      if (contenderCost < currentCost) {
-        return 1
-      } else {
-        return -1
-      }
-      return 0
-    })
-    
-    const currentid = unvisited.shift()
+  while (unvisited.size()) {
+    const currentid = unvisited.pop()[0]
     const current = graph.getNode(currentid)
     visited.add(currentid)
     
     if (currentid == end) {
       break // we have found the path
     }
-    
-    for (let i = 0; i < current.edges.length; i++) {
-      const edgeid = current.edges[i]
-      const edge = graph.getEdge(edgeid)
-      
-      // assumes graph is undirected.
-      const neighbourid = edge.getOutBound(currentid)
-      
+    for (const neighbourid of graph.getNeighbours(currentid)) {
       if (visited.has(neighbourid)) {
         continue
       }
@@ -64,7 +42,7 @@ export function aStar(graph, costFunc, start, end) {
           neighborPathNode.parent = currentid
         }
       } else {
-        unvisited.push(neighbourid)
+        unvisited.push([neighbourid, cost])
         path.set(neighbourid, new GraphPathNode(currentid, cost, costFunc(neighbour.weight, target.weight)))
       }
     }
