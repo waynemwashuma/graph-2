@@ -5,7 +5,7 @@ export class Node {
   /**
    * @type {[EdgeId | undefined, EdgeId | undefined]}
    */
-  next = []
+  next = [undefined, undefined]
   
   /**
    * @type {T}
@@ -38,11 +38,13 @@ export class Edge {
  */
 export class Graph {
   /**
+   * @private
    * @type {Node<T>[]}
    */
   nodes = []
   
   /**
+   * @private
    * @type {Edge<U>[]}
    */
   edges = []
@@ -110,7 +112,7 @@ export class Graph {
     if (!node) return undefined
     return node.weight
   }
-  getNodeWeight(id) {
+  getEdgeWeight(id) {
     const edge = this.getEdge(id)
     if (!edge) return undefined
     return edge.weight
@@ -127,6 +129,11 @@ export class Graph {
   getNodes() {
     return this.nodes
   }
+  
+  setNodeWeight(id,weight){
+    
+  }
+  setEdgeWeight(){}
   
   getNodeCount() {
     return this.nodes.length
@@ -182,7 +189,6 @@ export class GraphNeighbourIterator {
     if (node) {
       let edge = this.graph.getEdge(node.next[0])
       while (edge) {
-        console.log()
         yield edge.to
         edge = this.graph.getEdge(edge.next[0])
       }
