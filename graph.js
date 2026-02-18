@@ -180,6 +180,7 @@ export class Graph {
 export class GraphNodeEdgesIterator {
   /**
    * @private
+   * @type {Graph<T,U>}
    */
   graph
   /**
@@ -197,7 +198,7 @@ export class GraphNodeEdgesIterator {
   
   *[Symbol.iterator]() {
     const first = this.graph.getNode(this.nodeid)?.next[0]
-    if (first) {
+    if (first !== undefined) {
       let edge = this.graph.getEdge(first)
       while (edge) {
         yield edge
@@ -231,7 +232,7 @@ export class GraphNeighbourIterator {
   
   *[Symbol.iterator]() {
     const first = this.graph.getNode(this.nodeid)?.next[0]
-    if (first) {
+    if (first !== undefined) {
       let edge = this.graph.getEdge(first)
       while (edge) {
         yield edge.to
