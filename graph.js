@@ -196,41 +196,6 @@ export class GraphNeighbourIterator {
   }
 }
 
-export class GraphMap {
-  nodes = new Map()
-  edges = new Map()
-  nodeCounter = 0
-  edgeCounter = 0
-  directed
-  
-  addNode(weight) {
-    const id = this.nodeCounter
-    
-    this.nodes.set(new Node(weight))
-    this.nodeCounter += 1
-    
-    return id
-  }
-  
-  /**
-   * @param {NodeId} from
-   * @param {NodeId} to
-   * @param {U} weight
-   * @returns {EdgeId}
-   */
-  addEdge(from, to, weight) {
-    const id = this.edges.length
-    const edge = new Edge(from, to, weight)
-    
-    this.edgeCounter += 1
-    this.edges.set(id, edge)
-    this.nodes.get(from).edges.push(id)
-    this.nodes.get(to).edges.push(id)
-    
-    return id
-  }
-}
-
 /**
  * @typedef {number} EdgeId
  */
