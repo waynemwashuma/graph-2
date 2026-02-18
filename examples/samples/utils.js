@@ -166,6 +166,85 @@ export function generateHexagonalNodes(graph, width, height, num, offset = new V
  * @param {Vector2} num
  * @param {Vector2} offset
  */
+export function generateTriangleNodes(
+  graph,
+  width,
+  height,
+  num,
+  offset = new Vector2()
+) {
+  const cols = num.x
+  const rows = num.y
+
+  const dx = width / cols
+  const dy = height / rows
+
+  const nodeIds = new Array(rows)
+
+  for (let y = 0; y < rows; y++) {
+    nodeIds[y] = new Array(cols)
+
+    for (let x = 0; x < cols; x++) {
+      const pos = new Vector2(
+        offset.x + x * dx + (y % 2 === 1 ? dx / 2 : 0),
+        offset.y + y * dy
+      )
+
+      const id = graph.addNode(pos)
+      nodeIds[y][x] = id
+    }
+  }
+
+  for (let y = 0; y < rows; y++) {
+    for (let x = 0; x < cols; x++) {
+      const current = nodeIds[y][x]
+
+      const isOddRow = y % 2 === 1
+
+      const directions = isOddRow
+        ? [
+            [1, 0],
+            [0, 1],
+            [1, 1],
+            [-1, 0],
+            [0, -1],
+            [1, -1],
+          ]
+        : [
+            [1, 0],
+            [-1, 1],
+            [0, 1],
+            [-1, 0],
+            [-1, -1],
+            [0, -1],
+          ]
+
+      for (const [dxi, dyi] of directions) {
+        const nx = x + dxi
+        const ny = y + dyi
+
+        if (
+          nx >= 0 &&
+          nx < cols &&
+          ny >= 0 &&
+          ny < rows
+        ) {
+          const neighbor = nodeIds[ny][nx]
+
+          graph.addEdge(current, neighbor, 1)
+        }
+      }
+    }
+  }
+}
+
+/**
+ * @param {Graph} graph
+ * @param {number} width
+ * @param {number} height
+ * @param {Vector2} num
+ * @param {Vector2} offset
+ */
 export function generateDiagonalBoxedNodes(graph, width, height, num, offset = new Vector2()) {
   const widthX = width / num.x
   const heightY = height / num.y
