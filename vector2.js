@@ -819,3 +819,12 @@ export class Vector2 {
 export function rand(min = 0, max = 1) {
   return Math.random() * (max - min) + min
 }
+
+/**
+ * @param {number} value
+ * @param {number} width
+ * @returns {Vector2}
+ */
+export function mapToIndex2D(value, width) {
+  return new Vector2(value % width, Math.floor(value / width))
+}
