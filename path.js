@@ -96,7 +96,7 @@ export class GraphPath {
     while (current) {
       path.push(currentid)
       
-      if (current.parent) {
+      if (current.parent !== undefined) {
         currentid = current.parent
         current = this.get(currentid)
       } else{
