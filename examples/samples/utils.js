@@ -1,5 +1,4 @@
-import { Graph } from "../../graph.js"
-import { GraphPath } from "../../path.js"
+import { Graph, GraphPath } from "../../src/index.js"
 import { Vector2, rand } from "../../vector2.js"
 
 /**
@@ -37,7 +36,7 @@ export function drawGraph(ctx,graph) {
 /**
  * @param {CanvasRenderingContext2D} ctx
  * @param {Graph<Vector2>} graph
- * @param {import("../../graph").NodeId[]} path
+ * @param {import("../../src/index.js").NodeId[]} path
  */
 export function drawPath(ctx,graph, path) {
   if (!path.length) {

@@ -1,7 +1,6 @@
 import { Vector2 } from '../../../vector2.js';
 import { drawGraph, drawPath, generateDiagonalBoxedNodes, } from '../utils.js'
-import { Graph } from '../../../graph.js';
-import { aStar } from "../../../algo/index.js"
+import { aStar, Graph } from "../../../src/index.js"
 const canvas = document.createElement("canvas")
 const ctx = canvas.getContext('2d')
 

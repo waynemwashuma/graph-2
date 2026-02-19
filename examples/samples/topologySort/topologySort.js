@@ -1,6 +1,6 @@
-import { Graph } from "../../../graph.js"
 import { Vector2, mapToIndex2D } from "../../../vector2.js"
-import { kahnTopologySort } from "../../../algo/index.js"
+import { kahnTopologySort, Graph } from "../../../src/index.js"
+
 
 
 const nodeRadius = 10
@@ -69,7 +69,7 @@ controls.appendChild(sortBtn);
 
 /**@type {Graph<MyNode>} */
 const graph = new Graph(true);
-/**@type {import("../../../graph.js").EdgeId | null} */
+/**@type {import("../../../src/graph.js").EdgeId | null} */
 let edgeFrom = null;
 
 function draw() {
@@ -157,7 +157,7 @@ function drawEdges(ctx) {
 }
 
 /**
- * @type {import("../../../graph.js").NodeId | null}
+ * @type {import("../../../src/index.js").NodeId | null}
  */
 let draggingNode = null;
 /**

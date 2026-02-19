@@ -1,7 +1,7 @@
 import { Vector2 } from '../../../vector2.js';
 import { drawAllPaths, drawGraph, generateHexagonalNodes, } from '../utils.js'
-import { Graph } from '../../../graph.js';
-import { dijkstra } from "../../../algo/index.js"
+import { dijkstra, Graph } from "../../../src/index.js"
+
 const canvas = document.createElement("canvas")
 const ctx = canvas.getContext('2d')
 
