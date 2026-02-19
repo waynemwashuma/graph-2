@@ -6,12 +6,12 @@ export class Node {
    * @type {[EdgeId | undefined, EdgeId | undefined]}
    */
   next = [undefined, undefined]
-  
+
   /**
    * @type {T}
    */
   weight
-  
+
   /**
    * @param {T} weight
    */
@@ -24,23 +24,23 @@ export class Node {
  * @template T
  */
 export class Edge {
-    /**
-     * @type {NodeId}
-     */
-    from
-    /**
-     * @type {NodeId}
-     */
-    to
-    /**
+  /**
+   * @type {NodeId}
+   */
+  from
+  /**
+   * @type {NodeId}
+   */
+  to
+  /**
    * @type {[EdgeId | undefined, EdgeId | undefined]}
    */
-    next = [undefined, undefined]
-  
-    /**
-     * @type {T}
-     */
-    weight
+  next = [undefined, undefined]
+
+  /**
+   * @type {T}
+   */
+  weight
   /**
    * @param {number} from
    * @param {number} to
@@ -63,26 +63,26 @@ export class Graph {
    * @type {Node<T>[]}
    */
   nodes = []
-  
+
   /**
    * @private
    * @type {Edge<U>[]}
    */
   edges = []
-  
+
   /***
    * @readonly
    * @type {boolean}
    */
   directed
-  
+
   /**
    * @param {boolean} directed
    */
   constructor(directed) {
     this.directed = directed
   }
-  
+
   /**
    * @param {T} weight
    * @returns {NodeId}
@@ -93,7 +93,7 @@ export class Graph {
     this.nodes.push(node)
     return id
   }
-  
+
   /**
    * @param {NodeId} from
    * @param {NodeId} to
@@ -103,19 +103,19 @@ export class Graph {
   addEdge(from, to, weight) {
     const id = this.edges.length
     const edge = new Edge(from, to, weight)
-    
+
     this.edges.push(edge)
     const nodeA = this.nodes[from]
     const nodeB = this.nodes[to]
-    
+
     edge.next[0] = nodeA.next[0]
     edge.next[1] = nodeB.next[1]
     nodeA.next[0] = id
     nodeB.next[1] = id
-    
+
     return id
   }
-  
+
   /**
    * @param {NodeId} id
    * @returns {Node<T> | undefined}
@@ -123,7 +123,7 @@ export class Graph {
   getNode(id) {
     return this.nodes[id]
   }
-  
+
   /**
    * @param {EdgeId} id
    * @returns {Edge<U> | undefined}
@@ -165,13 +165,13 @@ export class Graph {
   getNodes() {
     return this.nodes
   }
-  
-  setEdgeWeight(){}
-  
+
+  setEdgeWeight() { }
+
   getNodeCount() {
     return this.nodes.length
   }
-  
+
   getEdgeCount() {
     return this.edges.length
   }
@@ -199,7 +199,7 @@ export class GraphNodeEdgesIterator {
     this.graph = graph
     this.nodeid = nodeid
   }
-  
+
   *[Symbol.iterator]() {
     const first = this.graph.getNode(this.nodeid)?.next[0]
     if (first !== undefined) {
@@ -238,7 +238,7 @@ export class GraphNeighbourIterator {
     this.graph = graph
     this.nodeid = nodeid
   }
-  
+
   /**
    * @returns {IterableIterator<NodeId>}
    */
