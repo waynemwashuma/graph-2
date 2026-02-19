@@ -7,9 +7,9 @@ import { GraphPath, GraphPathNode } from "../path.js"
  * @param {Graph<T,U>} graph
  * @param {(a: T, b: T) => number} costFunc
  * @param {import("../graph").NodeId} start
- * @param {import("../graph").NodeId} end
+ * @param {import("../graph").NodeId | undefined} end
  */
-export function dijkstra(graph, costFunc, start, end) {
+export function dijkstra(graph, costFunc, start, end = undefined) {
   const visited = new Set()
   const unvisited = [start]
   const path = new GraphPath()

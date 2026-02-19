@@ -1,4 +1,5 @@
 import { Graph } from "../../graph.js"
+import { GraphPath } from "../../path.js"
 import { Vector2, rand } from "../../vector2.js"
 
 /**
@@ -44,22 +45,85 @@ export function drawPath(ctx,graph, path) {
   }
   ctx.beginPath()
   ctx.strokeStyle = "red"
-  const start = graph.getNode(path[0])?.weight
+  let previous = graph.getNode(path[0])?.weight
 
-  if(!start){
+  if(!previous){
     return
   }
-  ctx.moveTo(start.x,start.y)
+  ctx.moveTo(previous.x,previous.y)
   for (let i = 1; i < path.length; i++) {
     const id = path[i]
     const node = graph.getNode(id)?.weight
     
     if (node) {
       ctx.lineTo(node.x,node.y)
+      ctx.stroke()
+      drawArrow(ctx, previous, node, 10)
+      previous = node
     }
   }
-  ctx.stroke()
   ctx.closePath()
+}
+
+/**
+ * Draws the entire shortest-path tree stored in GraphPath
+ * @param {CanvasRenderingContext2D} ctx
+ * @param {Graph<Vector2>} graph
+ * @param {GraphPath} graphPath
+ */
+export function drawAllPaths(ctx, graph, graphPath) {
+  const
+    strokeStyle = "red",
+    lineWidth = 2,
+    arrowSize = 10
+
+  ctx.save()
+  ctx.strokeStyle = strokeStyle
+  ctx.fillStyle = strokeStyle
+  ctx.lineWidth = lineWidth
+  ctx.lineJoin = "round"
+  ctx.lineCap = "round"
+
+  for (const [id, node] of graphPath.inner.entries()) {
+    if (!node.parent) continue
+
+    const from = graph.getNode(node.parent)?.weight
+    const to = graph.getNode(id)?.weight
+
+    if(from && to){
+      drawArrow(ctx, from, to, arrowSize)
+    }
+  }
+
+  ctx.restore()
+}
+
+/**
+ * @param {CanvasRenderingContext2D} ctx
+ * @param {Vector2} from
+ * @param {Vector2} to
+ * @param {number} arrowSize
+ */
+function drawArrow(ctx, from, to, arrowSize) {
+  const angle = Math.atan2(to.y - from.y, to.x - from.x)
+
+  ctx.beginPath()
+  ctx.moveTo(from.x, from.y)
+  ctx.lineTo(to.x, to.y)
+  ctx.stroke()
+
+  ctx.beginPath()
+  ctx.moveTo(to.x, to.y)
+  ctx.lineTo(
+    to.x - arrowSize * Math.cos(angle - Math.PI / 6),
+    to.y - arrowSize * Math.sin(angle - Math.PI / 6)
+  )
+  ctx.lineTo(
+    to.x - arrowSize * Math.cos(angle + Math.PI / 6),
+    to.y - arrowSize * Math.sin(angle + Math.PI / 6)
+  )
+  ctx.closePath()
+  ctx.fill()
 }
 
 /**
