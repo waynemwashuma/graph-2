@@ -84,8 +84,8 @@ export function drawAllPaths(ctx, graph, graphPath) {
   ctx.lineJoin = "round"
   ctx.lineCap = "round"
 
-  for (const [id, node] of graphPath.inner.entries()) {
-    if (!node.parent) continue
+  graphPath.forEach((id, node)=>{
+    if (node.parent === undefined) return
 
     const from = graph.getNode(node.parent)?.weight
     const to = graph.getNode(id)?.weight
@@ -93,7 +93,7 @@ export function drawAllPaths(ctx, graph, graphPath) {
     if(from && to){
       drawArrow(ctx, from, to, arrowSize)
     }
-  }
+  })
 
   ctx.restore()
 }

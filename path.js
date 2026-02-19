@@ -33,6 +33,7 @@ export class GraphPathNode {
 
 export class GraphPath {
   /**
+   * @private
    * @type {Map<import("./graph").NodeId,GraphPathNode>}
    */
   inner = new Map()
@@ -105,5 +106,14 @@ export class GraphPath {
     }
     
     return path.reverse()
+  }
+
+  /**
+   * @param {(id: import("./graph").NodeId, node: GraphPathNode) => void} callback
+   */
+  forEach(callback) {
+    for (const [id, node] of this.inner.entries()) {
+      callback(id, node)
+    }
   }
 }
