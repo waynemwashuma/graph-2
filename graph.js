@@ -201,18 +201,16 @@ export class GraphNodeEdgesIterator {
   }
 
   *[Symbol.iterator]() {
-    const first = this.graph.getNode(this.nodeid)?.next[0]
-    if (first !== undefined) {
-      let edge = this.graph.getEdge(first)
-      while (edge) {
-        yield edge
-        const next = edge.next[0]
-        if(!next){
+    let edgeId = this.graph.getNode(this.nodeid)?.next[0]
+      while (edgeId !== undefined) {
+        const edge = this.graph.getEdge(edgeId)
+
+        if (!edge) {
           break
         }
-        edge = this.graph.getEdge(next)
+        yield edge
+        edgeId = edge.next[0]
       }
-    }
   }
 }
 
@@ -221,15 +219,7 @@ export class GraphNodeEdgesIterator {
  * @template U
  */
 export class GraphNeighbourIterator {
-  /**
-   * @private
-   * @type {Graph<T,U>}
-   */
-  graph
-  /**
-   * @private
-   */
-  nodeid
+  edgeIter
   /**
    * @param {Graph<T, U>} graph
    * @param {NodeId} nodeid
@@ -237,23 +227,15 @@ export class GraphNeighbourIterator {
   constructor(graph, nodeid) {
     this.graph = graph
     this.nodeid = nodeid
+    this.edgeIter = new GraphNodeEdgesIterator(graph, nodeid)
   }
 
   /**
    * @returns {IterableIterator<NodeId>}
    */
   *[Symbol.iterator]() {
-    const first = this.graph.getNode(this.nodeid)?.next[0]
-    if (first !== undefined) {
-      let edge = this.graph.getEdge(first)
-      while (edge) {
-        yield edge.to
-        const next = edge.next[0]
-        if(!next){
-          break
-        }
-        edge = this.graph.getEdge(next)
-      }
+    for (const edge of this.edgeIter) {
+      yield edge.to
     }
   }
 }
