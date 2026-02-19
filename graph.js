@@ -166,7 +166,27 @@ export class Graph {
     return this.nodes
   }
 
-  setEdgeWeight() { }
+  /**
+   * @param {NodeId} id
+   * @param {T} weight
+   */
+  setNodeWeight(id, weight) {
+    const node = this.getNode(id);
+    if (node) {
+      node.weight = weight;
+    }
+  }
+
+  /**
+   * @param {EdgeId} id
+   * @param {U} weight
+   */
+  setEdgeWeight(id, weight) {
+    const edge = this.getEdge(id);
+    if (edge) {
+      edge.weight = weight;
+    }
+  }
 
   getNodeCount() {
     return this.nodes.length
@@ -202,15 +222,15 @@ export class GraphNodeEdgesIterator {
 
   *[Symbol.iterator]() {
     let edgeId = this.graph.getNode(this.nodeid)?.next[0]
-      while (edgeId !== undefined) {
-        const edge = this.graph.getEdge(edgeId)
+    while (edgeId !== undefined) {
+      const edge = this.graph.getEdge(edgeId)
 
-        if (!edge) {
-          break
-        }
-        yield edge
-        edgeId = edge.next[0]
+      if (!edge) {
+        break
       }
+      yield edge
+      edgeId = edge.next[0]
+    }
   }
 }
 
