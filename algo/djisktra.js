@@ -14,10 +14,12 @@ export function dijkstra(graph, costFunc, start, end = undefined) {
   const unvisited = [start]
   const path = new GraphPath()
 
+  path.set(start, new GraphPathNode(undefined, 0))
+
   while (unvisited.length) {
     unvisited.sort((a, b) =>
-      (path.get(a)?.gCost ?? Infinity) -
-      (path.get(b)?.gCost ?? Infinity)
+      (path.get(a)?.gCost ?? Number.MAX_SAFE_INTEGER) -
+      (path.get(b)?.gCost ?? Number.MAX_SAFE_INTEGER)
     )
 
     const currentid = unvisited.shift()
@@ -31,9 +33,6 @@ export function dijkstra(graph, costFunc, start, end = undefined) {
     const current = graph.getNode(currentid)
     const currentPathNode = path.getOrSet(currentid)
 
-    if (!current) {
-
-    }
     for (const neighbourid of graph.getNeighbours(currentid)) {
       if (visited.has(neighbourid)) continue
 
