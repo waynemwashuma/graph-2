@@ -5,6 +5,11 @@ import { kahnTopologySort } from "../../../algo/index.js"
 
 const nodeRadius = 10
 class MyNode {
+    /**
+     * @param {string} name
+     * @param {string} colour
+     * @param {Vector2} pos
+     */
     constructor(name, colour, pos) {
         this.pos = pos
         this.colour = colour
@@ -62,27 +67,39 @@ const sortBtn = document.createElement('button');
 sortBtn.innerText = 'Run Topological Sort';
 controls.appendChild(sortBtn);
 
-const graph = new Graph();
+/**@type {Graph<MyNode>} */
+const graph = new Graph(true);
+/**@type {import("../../../graph.js").EdgeId | null} */
 let edgeFrom = null;
 
 function draw() {
+    if (!ctx) {
+        throw "No canvas 2d context!"
+    }
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawEdges();
-    drawNodes();
+    drawNodes(ctx);
+    drawEdges(ctx);
     requestAnimationFrame(draw)
 }
 
-function drawNodes() {
+/**
+ * @param {CanvasRenderingContext2D} ctx 
+ */
+function drawNodes(ctx) {
     const nodes = graph.getNodes()
     for (let id = 0; id < nodes.length; id++) {
-        const { pos, colour, name } = graph.getNode(id).weight;
+        const node = graph.getNode(id)?.weight;
+        if (!node) {
+            continue
+        }
+        const { pos, colour, name } = node;
         ctx.beginPath();
         ctx.arc(pos.x, pos.y, nodeRadius, 0, Math.PI * 2);
         ctx.fillStyle = colour;
         ctx.fill();
         ctx.strokeStyle = "#333";
         ctx.stroke();
-        
+
         ctx.fillStyle = "white";
         ctx.font = "14px Arial";
         ctx.textAlign = "center";
@@ -91,30 +108,38 @@ function drawNodes() {
     }
 }
 
-function drawEdges() {
-    for (let e of graph.edges) {
-        const from = graph.getNode(e.from).weight;
-        const to = graph.getNode(e.to).weight;
-        
+/**
+ * @param {CanvasRenderingContext2D} ctx 
+ */
+function drawEdges(ctx) {
+    const edges = graph.getEdges()
+    
+    for (let e of edges) {
+        const from = graph.getNode(e.from)?.weight.pos;
+        const to = graph.getNode(e.to)?.weight.pos;
+
+        if (!from || !to) {
+            continue
+        }
         const dir = new Vector2(to.x - from.x, to.y - from.y);
         const length = Math.hypot(dir.x, dir.y);
         const nx = dir.x / length;
         const ny = dir.y / length;
-        
+
         const startX = from.x + nx * nodeRadius;
         const startY = from.y + ny * nodeRadius;
         const endX = to.x - nx * nodeRadius;
         const endY = to.y - ny * nodeRadius;
-        
+
         ctx.beginPath();
         ctx.moveTo(startX, startY);
         ctx.lineTo(endX, endY);
-        ctx.strokeStyle = "#000";
+        ctx.strokeStyle = "white";
         ctx.stroke();
-        
+
         const arrowSize = 10;
         const angle = Math.atan2(endY - startY, endX - startX);
-        
+
         ctx.beginPath();
         ctx.moveTo(endX, endY);
         ctx.lineTo(
@@ -126,28 +151,33 @@ function drawEdges() {
             endY - arrowSize * Math.sin(angle + Math.PI / 6)
         );
         ctx.closePath();
-        ctx.fillStyle = "#000";
+        ctx.fillStyle = "white";
         ctx.fill();
     }
 }
 
+/**
+ * @type {import("../../../graph.js").NodeId | null}
+ */
 let draggingNode = null;
-let dragOffset = null;
+/**
+ * @type {Vector2}
+ */
+let dragOffset = new Vector2();
 
 canvas.addEventListener("pointerdown", (e) => {
     const mouse = getMousePos(e);
-    
-    for (const id in graph.getNodes()) {
-        const node = graph.nodes[id].weight
-        
-        const { pos } = node;
+    const nodes = graph.getNodes()
+    for (let id = 0; id < nodes.length; id++) {
+        const node = nodes[id]
+        const { pos } = node.weight;
         const dist = Math.hypot(mouse.x - pos.x, mouse.y - pos.y);
-        
+
         if (dist <= nodeRadius) {
             if (edgeFrom === null) {
                 edgeFrom = id;
             } else if (edgeFrom !== id) {
-                
+
                 graph.addEdge(edgeFrom, id, undefined);
                 edgeFrom = null;
             }
@@ -162,13 +192,15 @@ canvas.addEventListener("pointerdown", (e) => {
 
 canvas.addEventListener("pointermove", (e) => {
     if (draggingNode !== null) {
-        const node = graph.getNode(draggingNode).weight
+        const node = graph.getNode(draggingNode)?.weight
         const mouse = getMousePos(e);
-        
-        node.pos.set(
-            mouse.x - dragOffset.x,
-            mouse.y - dragOffset.y
-        );
+
+        if (node) {
+            node.pos.set(
+                mouse.x - dragOffset.x,
+                mouse.y - dragOffset.y
+            );
+        }
     }
 });
 
@@ -185,7 +217,8 @@ addNodeBtn.addEventListener('click', () => {
     )
     const count = graph.getNodeCount()
     const position = mapToIndex2D(count, width - 1)
-    const id = graph.addNode(new MyNode(
+    
+    graph.addNode(new MyNode(
         `N${count}`,
         "#0077FF",
         position.multiply(offset).add(offset)
@@ -204,15 +237,18 @@ sortBtn.addEventListener('click', () => {
 function runTopologicalSort() {
     console.log(graph)
     const results = kahnTopologySort(graph)
-    
-    if(!results){
+
+    if (!results) {
         alert("A cycle has been detected in the graph")
         return
     }
-    
-    sortedDiv.innerText = 'Sorted Array: [' + results.map(n => graph.getNode(n).weight.name).join(', ') + ']';
+
+    sortedDiv.innerText = 'Sorted Array: [' + results.map(n => graph.getNode(n)?.weight.name).join(', ') + ']';
 }
 
+/**
+ * @param {PointerEvent} evt
+ */
 function getMousePos(evt) {
     const rect = canvas.getBoundingClientRect();
     return new Vector2(

@@ -1,10 +1,14 @@
 const top = 0;
-const parent = i => ((i + 1) >>> 1) - 1;
-const left = i => (i << 1) + 1;
-const right = i => (i + 1) << 1;
+const parent = (/** @type {number} */ i) => ((i + 1) >>> 1) - 1;
+const left = (/** @type {number} */ i) => (i << 1) + 1;
+const right = (/** @type {number} */ i) => (i + 1) << 1;
 
+/**
+ * @template T
+ */
 export class PriorityQueue {
-  constructor(comparator = (a, b) => a > b) {
+  constructor(comparator = (/** @type {T} */ a, /** @type {T} */ b) => a > b) {
+    /** @type {T[]} */
     this._heap = [];
     this._comparator = comparator;
   }
@@ -17,6 +21,9 @@ export class PriorityQueue {
   peek() {
     return this._heap[top];
   }
+  /**
+   * @param {T[]} values
+   */
   push(...values) {
     values.forEach(value => {
       this._heap.push(value);
@@ -34,15 +41,26 @@ export class PriorityQueue {
     this._siftDown();
     return poppedValue;
   }
+  /**
+   * @param {T} value
+   */
   replace(value) {
     const replacedValue = this.peek();
     this._heap[top] = value;
     this._siftDown();
     return replacedValue;
   }
+  /**
+   * @param {number} i
+   * @param {number} j
+   */
   _greater(i, j) {
     return this._comparator(this._heap[i], this._heap[j]);
   }
+  /**
+   * @param {number} i
+   * @param {number} j
+   */
   _swap(i, j) {
     [this._heap[i], this._heap[j]] = [this._heap[j], this._heap[i]];
   }

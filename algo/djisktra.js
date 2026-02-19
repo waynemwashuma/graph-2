@@ -1,61 +1,52 @@
-import { GraphPath, GraphPathNode } from '../path.js';
+import { Graph } from "../graph.js"
+import { GraphPath, GraphPathNode } from "../path.js"
+
 /**
  * @template T
- * @param {Graph<T>} graph
- * @param {(start:T,end:T)=>number} costFunc
- * @param {NodeId} start
- * @param {NodeId | undefined} end
+ * @template U
+ * @param {Graph<T,U>} graph
+ * @param {(a: T, b: T) => number} costFunc
+ * @param {import("../graph").NodeId} start
+ * @param {import("../graph").NodeId} end
  */
 export function dijkstra(graph, costFunc, start, end) {
   const visited = new Set()
   const unvisited = [start]
-  const distance = new Map()
   const path = new GraphPath()
-  path.set(start, new GraphPathNode())
-  
+
   while (unvisited.length) {
-    unvisited.sort((a, b) => {
-      const nodeA = graph.getNode(a)
-      const nodeB = graph.getNode(b)
-      const pathA = path.get(a)
-      const pathB = path.get(b)
-      const currentCost = pathA.fCost()
-      const contenderCost = pathB.fCost()
-      
-      if (
-        contenderCost < currentCost
-      ) {
-        return 1
-      } else {
-        return -1
-      }
-      return 0
-    })
-    
+    unvisited.sort((a, b) =>
+      (path.get(a)?.gCost ?? Infinity) -
+      (path.get(b)?.gCost ?? Infinity)
+    )
+
     const currentid = unvisited.shift()
-    const current = graph.getNode(currentid)
-    visited.add(currentid)
-    
-    if (currentid == end) {
-      break // we have found the path
+    if (currentid === undefined) break
+
+    if (end !== undefined && currentid === end) {
+      break
     }
-    
-    for (let i = 0; i < current.edges.length; i++) {
-      const edgeid = current.edges[i]
-      const edge = graph.edges[edgeid]
-      
-      // assumes graph is undirected.
-      const neighbourid = edge.getOutBound(currentid)
-      
-      if (visited.has(neighbourid)) {
-        continue
-      }
-      
+
+    visited.add(currentid)
+    const current = graph.getNode(currentid)
+    const currentPathNode = path.getOrSet(currentid)
+
+    if (!current) {
+
+    }
+    for (const neighbourid of graph.getNeighbours(currentid)) {
+      if (visited.has(neighbourid)) continue
+
       const neighbour = graph.getNode(neighbourid)
+      const cost =
+        currentPathNode.gCost + (
+          (current && neighbour) ?
+            costFunc(current.weight, neighbour.weight) :
+            0
+        )
+
       const neighborPathNode = path.get(neighbourid)
-      const currentPathNode = path.get(currentid)
-      const cost = currentPathNode.gCost + costFunc(current.weight, neighbour.weight)
-      
+
       if (neighborPathNode) {
         if (cost < neighborPathNode.gCost) {
           neighborPathNode.gCost = cost
@@ -65,8 +56,8 @@ export function dijkstra(graph, costFunc, start, end) {
         unvisited.push(neighbourid)
         path.set(neighbourid, new GraphPathNode(currentid, cost))
       }
-      
     }
   }
+
   return path
 }

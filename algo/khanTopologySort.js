@@ -1,8 +1,17 @@
+import { Graph } from "../graph.js";
+
+/**
+ * @template T
+ * @template U
+ * @param {Graph<T,U>} graph 
+ * @returns {import("../graph").NodeId[] | undefined}
+ */
 export function kahnTopologySort(graph) {
   const nodeCount = graph.getNodeCount();
+  const edges = graph.getEdges();
   const inDegree = new Array(nodeCount).fill(0);
 
-  for (let e of graph.edges) {
+  for (let e of edges) {
     inDegree[e.to]++;
   }
 
@@ -15,14 +24,16 @@ export function kahnTopologySort(graph) {
   let head = 0;
 
   while (head < queue.length) {
+    /**@type {import("../graph").NodeId} */
     const nodeId = queue[head];
-    head += 1;
     sorted.push(nodeId);
-    for (let neigh of graph.getNeighbours(nodeId)) {
-      if (--inDegree[neigh] === 0) {
+    for (const neigh of graph.getNeighbours(nodeId)) {
+      inDegree[neigh] -= 1
+      if (inDegree[neigh] === 0) {
         queue.push(neigh);
       }
     }
+    head += 1;
   }
   
   return sorted.length === nodeCount ? sorted : undefined;

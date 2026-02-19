@@ -1,12 +1,14 @@
+import { Graph } from '../graph.js';
 import { GraphPath, GraphPathNode } from '../path.js';
 import { PriorityQueue } from '../priorityqueue.js';
 
 /**
  * @template T
- * @param {Graph<T>} graph
+ * @template U
+ * @param {Graph<T, U>} graph
  * @param {(start:T,end:T)=>number} costFunc
- * @param {NodeId} start
- * @param {NodeId} end
+ * @param {import('../graph.js').NodeId} start
+ * @param {import('../graph.js').NodeId} end
  * @returns {GraphPath}
  */
 export function aStar(graph, costFunc, start, end) {

@@ -10,11 +10,14 @@ export class GraphPathNode {
   hCost
   
   /**
-   * @type {NodeId | undefined}
+   * @type {import("./graph").NodeId | undefined}
    */
   parent
   
-  constructor(parent, gCost = 0, hCost = 0) {
+  /**
+   * @param {import("./graph").NodeId | undefined} parent
+   */
+  constructor(parent = undefined, gCost = 0, hCost = 0) {
     this.parent = parent
     this.gCost = gCost
     this.hCost = hCost
@@ -30,29 +33,43 @@ export class GraphPathNode {
 
 export class GraphPath {
   /**
-   * @type {Map<NodeId,GraphPathNode>}
+   * @type {Map<import("./graph").NodeId,GraphPathNode>}
    */
   inner = new Map()
   
   /**
-   * @param {NodeId} id
+   * @param {import("./graph").NodeId} id
    * @param {GraphPathNode} value
-   * @returns {void}
+   * @returns {GraphPathNode}
    */
   set(id, value) {
     this.inner.set(id, value)
+    return value
   }
   
   /**
-   * @param {NodeId} id
-   * @returns {GraphPathNode ! undefined}
+   * @param {import("./graph").NodeId} id
+   * @returns {GraphPathNode | undefined}
    */
   get(id) {
     return this.inner.get(id)
   }
+
+  /**
+   * @param {import("./graph").NodeId} key
+   */
+  getOrSet(key){
+    const node = this.get(key)
+
+    if (node) {
+      return node
+    }
+
+    return this.set(key, new GraphPathNode())
+  }
   
   /**
-   * @param {NodeId} id
+   * @param {import("./graph").NodeId} id
    * @returns {void}
    */
   delete(id) {
@@ -60,7 +77,7 @@ export class GraphPath {
   }
   
   /**
-   * @param {NodeId} id
+   * @param {import("./graph").NodeId} id
    * @returns {boolean}
    */
   has(id){
@@ -68,7 +85,8 @@ export class GraphPath {
   }
   
   /**
-   * @return {NodeId[]}
+   * @return {import("./graph").NodeId[]}
+   * @param {import("./graph").NodeId} id
    */
   path(id){
     let currentid = id
@@ -78,8 +96,12 @@ export class GraphPath {
     while (current) {
       path.push(currentid)
       
-      currentid = current.parent
-      current = this.get(currentid)
+      if (current.parent) {
+        currentid = current.parent
+        current = this.get(currentid)
+      } else{
+        break
+      }
     }
     
     return path.reverse()

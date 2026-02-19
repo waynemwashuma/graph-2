@@ -148,7 +148,7 @@ export class Graph {
     return edge.weight
   }
   /**
-   * @param {any} id
+   * @param {NodeId} id
    */
   getNeighbours(id) {
     return new GraphNeighbourIterator(this, id)
@@ -177,6 +177,10 @@ export class Graph {
   }
 }
 
+/**
+ * @template T
+ * @template U
+ */
 export class GraphNodeEdgesIterator {
   /**
    * @private
@@ -212,9 +216,14 @@ export class GraphNodeEdgesIterator {
   }
 }
 
+/**
+ * @template T
+ * @template U
+ */
 export class GraphNeighbourIterator {
   /**
    * @private
+   * @type {Graph<T,U>}
    */
   graph
   /**
@@ -222,7 +231,7 @@ export class GraphNeighbourIterator {
    */
   nodeid
   /**
-   * @param {Graph} graph
+   * @param {Graph<T, U>} graph
    * @param {NodeId} nodeid
    */
   constructor(graph, nodeid) {
@@ -230,6 +239,9 @@ export class GraphNeighbourIterator {
     this.nodeid = nodeid
   }
   
+  /**
+   * @returns {IterableIterator<NodeId>}
+   */
   *[Symbol.iterator]() {
     const first = this.graph.getNode(this.nodeid)?.next[0]
     if (first !== undefined) {
